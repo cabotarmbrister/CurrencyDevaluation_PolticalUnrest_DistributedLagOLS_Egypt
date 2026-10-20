@@ -4,4 +4,7 @@
 
 import pandas as pd
 import seaborn as sns
-import statsmodels
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import sqlite3 as sq
+
