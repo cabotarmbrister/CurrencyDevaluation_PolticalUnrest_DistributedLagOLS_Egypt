@@ -37,6 +37,8 @@ the new monthly acled data with the monthly currency data all under one combined
 ensures if no acled data value will be 0 and not NULL, sorts oldest to most recent
 '''
 
+# Data aggregation, integration, & cleaning
+
 query = """
 
 WITH monthly_events AS (
@@ -60,6 +62,39 @@ ORDER BY fx_monthly.year_month ASC;
 df_joined = pd.read_sql_query(query, conn)
 conn.close()
 
-print(df_joined.head(10))
+'''
+finding lagging shock(political unrest) response to a specific
+% change in FX, lagging response for 1 month, 2 months, 3 months, and 4 months
+'''
+
+df_joined['fx_pct_change'] = df_joined['fx_rate'].pct_change() * 100
+
+
+df_joined["fx_lag_1"] = df_joined["fx_pct_change"].shift(1) 
+df_joined["fx_lag_2"] = df_joined["fx_pct_change"].shift(2) 
+df_joined["fx_lag_3"] = df_joined["fx_pct_change"].shift(3) 
+df_joined["fx_lag_4"] = df_joined["fx_pct_change"].shift(4) 
+
+'''
+if there is no data available for % change in fx that corresponds with the lag,
+this line of code deletes the "na" lines without data, makes a copy of the data
+frame as well so no errors with pandas
+'''
+
+df_model = df_joined.dropna().copy() 
+
+# Econometrics Modeling
+
+model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3 + fx_lag_4", data=df_model).fit()
+
+# print(model.summary(alpha=.10))
+
+# Econometrics Modeling post 2014, accounting for Arab Spring 
+
+df_modern = df_model[df_model['year_month'] >= '2014-01'].copy()
+
+modern_model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3 + fx_lag_4", data=df_modern).fit()
+
+print(modern_model.summary(alpha=.10))
 
 
