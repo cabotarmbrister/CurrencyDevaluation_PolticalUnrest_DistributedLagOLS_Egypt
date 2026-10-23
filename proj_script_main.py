@@ -73,7 +73,7 @@ df_joined['fx_pct_change'] = df_joined['fx_rate'].pct_change() * 100
 df_joined["fx_lag_1"] = df_joined["fx_pct_change"].shift(1) 
 df_joined["fx_lag_2"] = df_joined["fx_pct_change"].shift(2) 
 df_joined["fx_lag_3"] = df_joined["fx_pct_change"].shift(3) 
-df_joined["fx_lag_4"] = df_joined["fx_pct_change"].shift(4) 
+
 
 '''
 if there is no data available for % change in fx that corresponds with the lag,
@@ -85,16 +85,46 @@ df_model = df_joined.dropna().copy()
 
 # Econometrics Modeling
 
-model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3 + fx_lag_4", data=df_model).fit()
-
-# print(model.summary(alpha=.10))
+model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3", data=df_model).fit()
 
 # Econometrics Modeling post 2014, accounting for Arab Spring 
 
 df_modern = df_model[df_model['year_month'] >= '2014-01'].copy()
 
-modern_model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3 + fx_lag_4", data=df_modern).fit()
+modern_model = smf.ols("events_count ~ fx_pct_change + fx_lag_1 + fx_lag_2 + fx_lag_3", data=df_modern).fit()
 
 print(modern_model.summary(alpha=.10))
 
+# Visualizing Data w/ MatPlotLib
 
+df_model['predicted_events'] = model.predict(df_model)
+
+x_value = input('''Select which x-axis variable you would like: 
+\tPercent Change: fx_pct_change
+\tLag 1: fx_lag_1
+\tLag 2: fx_lag_2
+\tLag 3: fx_lag_3
+
+''')
+
+plt.figure(figsize=(9, 5))
+
+
+sns.regplot(
+    data=df_modern,
+    x= x_value,       
+    y='events_count',        
+    ci=90,                   
+    scatter_kws={'alpha': 0.5, 'color': 'steelblue'}, 
+    line_kws={'color': 'firebrick', 'linewidth': 2}   
+)
+
+plt.axvline(0, color='gray', linestyle='--', linewidth=1, alpha=0.6) # axis line
+
+plt.title('Egyptian Currency Devaluation vs. Conflict Events', fontsize=12)
+plt.xlabel('Monthly FX % Depreciation (Shock)/Lag 1/Lag 2/Lag 3', fontsize=10)
+plt.ylabel('Monthly Conflict Events Recorded', fontsize=10)
+plt.grid(True, linestyle='--', alpha=0.4)
+plt.tight_layout()
+
+plt.show()
