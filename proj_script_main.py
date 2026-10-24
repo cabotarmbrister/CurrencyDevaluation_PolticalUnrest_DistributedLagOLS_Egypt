@@ -64,7 +64,7 @@ conn.close()
 
 '''
 finding lagging shock(political unrest) response to a specific
-% change in FX, lagging response for 1 month, 2 months, 3 months, and 4 months
+% change in FX, lagging response for 1 month, 2 months, and 3 months
 '''
 
 df_joined['fx_pct_change'] = df_joined['fx_rate'].pct_change() * 100
