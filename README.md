@@ -2,7 +2,7 @@
 An end-to-end econometrics and data science project evaluating the relationship between macroeconomic currency shocks in the Egyptian Pound and political protests and disruption events in Egypt using SQL, Pandas, Statsmodels, Matplotlib, and Seaborn.
 
 **Project Overview**
-This project tests to see whether there is a relationship between month-to-month devaluations in currency and political disruptions in the country. It also tests to see if there is a delayed response (lag) in political disruptions as response to currency devaluation, tests to see the magnitude of political disruptions for the current month, 30, and 60 days following the currency devaluation. 
+This project tests to see whether there is a relationship between month-to-month devaluations in currency and political disruptions in the country. It also tests to see if there is a delayed response (lag) in political disruptions as response to currency devaluation, tests to see the magnitude of political disruptions for the current month, 30, 60, and 90 days following the currency devaluation. 
 
 **Distributed Lag Ordinary Least Squares Model**
 Model: Y_subscript(t) = β + β₁(%ΔFX_subscript(t)) + β₂(%ΔFX_subscript(t-1)) + β₃(%ΔFX_subscript(t-2)) + ε_subscript(t)
